@@ -1,0 +1,26 @@
+env_forecast/
+
+# Entornos virtuales
+venv/
+env/
+ENV/
+.env/
+.venv/
+virtualenv/
+
+# Python Environments
+.Python
+env_*/
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+.Pipfile
+
+# conda
+.conda/
+
+# poetry
+.venv/
