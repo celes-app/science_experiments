@@ -46,12 +46,11 @@ def main(
 
     start_time = time.time()
 
-    # Preparar listas para guardar métricas globales
     results = []
     series_keys = list(train_dict.keys())
 
     if parallel:
-        # 5a. Ejecutar en paralelo
+
         parallel_results = Parallel(n_jobs=n_jobs)(
             delayed(lgbm_optimizer.optimize_one_series)(
                 key,
@@ -59,23 +58,17 @@ def main(
                 val_dict,
                 fixed_params,
                 n_trials=5,
-                save_hyperparams=False  # <-- No guardamos en paralelo
+                save_hyperparams=False
             )
             for key in series_keys
         )
 
-        # 'parallel_results' es una lista de tuplas:
-        # (best_value, best_params, best_mape, best_smape, best_rmse)
-        # Agregamos el 'key' al principio para poder identificar la serie
         for key, res_tuple in zip(series_keys, parallel_results):
-            # res_tuple = (best_value, best_params, best_mape, best_smape, best_rmse)
-            # Insertamos key:
             results.append((key,) + res_tuple)
 
     else:
-        # 5b. Ejecución secuencial
+
         for key in series_keys:
-            # Retorna (best_value, best_params, best_mape, best_smape, best_rmse)
             res_tuple = lgbm_optimizer.optimize_one_series(
                 key,
                 train_dict,
@@ -84,27 +77,22 @@ def main(
                 n_trials=5,
                 save_hyperparams=False
             )
-            # Insertamos key al inicio
+
             results.append((key,) + res_tuple)
 
-    # Ahora 'results' es una lista de tuplas:
-    # [ (key, best_value, best_params, best_mape, best_smape, best_rmse), ... ]
-
-    # 6. Calcular métricas globales y guardar hiperparámetros
     global_rmse = []
     global_mape = []
     global_smape = []
 
     for (key, best_value, best_params, best_mape_, best_smape_, best_rmse_) in results:
-        # Llenamos las listas para el promedio
+
         global_rmse.append(best_rmse_)
         global_mape.append(best_mape_)
         global_smape.append(best_smape_)
 
-        # Guardamos hiperparámetros SECUENCIALMENTE, evitando contención de I/O
+
         if save_hyperparams:
-            # asumiendo que 'key' es una tupla (KeySupplyChain, TSType, ...)
-            # y que 'key[0]' es el KeySupplyChain
+
             lgbm_optimizer.save_hyperparams_for_series(
                 best_params,
                 keysupplychain=key[0],
@@ -128,10 +116,8 @@ def main(
     else:
         print("No se obtuvieron métricas (¿no hay series?).")
 
-    # Opcional, para debug
     embed()
 
 
 if __name__ == "__main__":
-    # ejemplo: mlflow activo, en paralelo, guardando hiperparams, usando todos los cores
     main(use_mlflow=True, parallel=True, save_hyperparams=True, n_jobs=-1)
