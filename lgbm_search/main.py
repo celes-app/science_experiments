@@ -20,7 +20,7 @@ def main(
     n_jobs: int = -1
 ):
     # 1. Cargar configuración
-    lgbm_path_config = "/home/ec2-user/celes-ml/lgbm_serching/configs/models/lgbm/search_space.yml"
+    lgbm_path_config = "models/lgbm/search_space.yml"
     lgbm_config = ConfigLoader.load_yaml(lgbm_path_config)
     search_space = lgbm_config["search_space"]
     fixed_params = lgbm_config["fixed_params"]
@@ -51,7 +51,10 @@ def main(
 
     if parallel:
 
-        parallel_results = Parallel(n_jobs=n_jobs)(
+        parallel_results = Parallel(
+            n_jobs=n_jobs,
+            verbose=10, prefer="processes",
+            max_nbytes=None)(
             delayed(lgbm_optimizer.optimize_one_series)(
                 key,
                 train_dict,

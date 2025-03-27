@@ -1,0 +1,76 @@
+fixed_params:
+  multi_models: true
+  lags: 5
+  verbose: 0
+  verbosity: -1
+  n_jobs: 1
+
+search_space:
+  params:
+    boosting_type:
+      type: categorical
+      choices: ["gbdt", "dart", "goss"]
+
+    objective:
+      type: categorical
+      choices: ["regression"]
+
+    learning_rate:
+      type: float
+      low: 0.005
+      high: 0.1
+      log: true
+
+    n_estimators:
+      type: int
+      low: 50
+      high: 1000
+
+    num_leaves:
+      type: int
+      low: 8
+      high: 512
+
+    max_depth:
+      type: int
+      low: 3
+      high: 10
+
+    reg_alpha:
+      type: float
+      low: 0.0
+      high: 1.0
+
+    reg_lambda:
+      type: float
+      low: 0.0
+      high: 1.0
+
+    feature_fraction:
+      type: float
+      low: 0.1
+      high: 1.0
+
+    bagging_fraction:
+      type: float
+      low: 0.5
+      high: 1.0
+
+    bagging_freq:
+      type: categorical
+      choices: [1, 5, 10]
+
+    min_data_in_leaf:
+      type: int
+      low: 1
+      high: 100
+
+    max_bin:
+      type: int
+      low: 63
+      high: 255
+
+    min_split_gain:
+      type: float
+      low: 0.0
+      high: 2.0
